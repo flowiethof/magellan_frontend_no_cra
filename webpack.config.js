@@ -24,6 +24,7 @@ module.exports = {
     contentBase: path.resolve(__dirname, "./dist"),
     host: "0.0.0.0",
     port: 3000,
+    disableHostCheck: true,
     hot: true,
   },
 };
