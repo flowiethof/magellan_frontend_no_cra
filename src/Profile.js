@@ -1,6 +1,8 @@
 import React from "react";
 import { useState, useEffect } from "react";
 import { get_data, write_to_gsheet } from "./GSheet";
+import Image from "./picus_logo.jpg";
+
 const result = [];
 
 const sheets = {
@@ -96,52 +98,66 @@ function Profile() {
     console.log(result);
   }
   return (
-    <div className="container" style={{ marginTop: 50 }}>
-      {data && (
-        <h3>
-          <a href={data[index]["Link"]}>
-            {data[index]["funded_organization_identifier"]}
-          </a>
-        </h3>
-      )}
-      <table>{rows}</table>
-      <form id="profile-form">
-        <h4>Comment</h4>
-        <div>
-          <textarea id="comment"></textarea>
+    <>
+      <header
+        id="header"
+        style={{
+          backgroundColor: "black",
+          height: "80px",
+          color: "white",
+        }}
+      >
+        <div style={{ paddingLeft: "30px" }}>
+          <img src={Image} alt="Picus" style={{ height: "80px" }} />
         </div>
-        <div>
-          <h4>Responsible</h4>
-          <select id="responsible">
-            <option></option>
-            <option>Moritz</option>
-            <option>Carina</option>
-            <option>Stephan</option>
-            <option>Florian</option>
-            <option>Alex</option>
-            <option>Philipp</option>
-            <option>Lukas</option>
-            <option>Niclas</option>
-            <option>Sebastian</option>
-            <option>Olli</option>
-          </select>
-        </div>
-        <button
-          className="btn btn-success"
-          type="button"
-          onClick={() => handleSubmit("relevant")}
-        >
-          Relevant
-        </button>
-        <button
-          className="btn btn-danger"
-          type="button"
-          onClick={() => handleSubmit("reject")}
-        >
-          Reject
-        </button>
-      </form>
-    </div>
+      </header>
+      <div className="container" style={{ marginTop: 50 }}>
+        {data && (
+          <h3 style={{ marginBottom: "30px" }}>
+            <a href={data[index]["Link"]} style={{ color: "gray" }}>
+              {data[index]["funded_organization_identifier"]}
+            </a>
+          </h3>
+        )}
+        <table>{rows}</table>
+        <form id="profile-form">
+          <h4>Comment</h4>
+          <div>
+            <textarea id="comment"></textarea>
+          </div>
+          <div>
+            <h4>Responsible</h4>
+            <select id="responsible">
+              <option></option>
+              <option>Moritz</option>
+              <option>Carina</option>
+              <option>Stephan</option>
+              <option>Florian</option>
+              <option>Alex</option>
+              <option>Philipp</option>
+              <option>Lukas</option>
+              <option>Niclas</option>
+              <option>Sebastian</option>
+              <option>Olli</option>
+            </select>
+          </div>
+          <button
+            className="btn btn-success"
+            type="button"
+            onClick={() => handleSubmit("relevant")}
+          >
+            Relevant
+          </button>
+          <button
+            className="btn btn-secondary"
+            type="button"
+            onClick={() => handleSubmit("reject")}
+          >
+            Reject
+          </button>
+        </form>
+      </div>
+    </>
   );
 }
 

@@ -1,10 +1,12 @@
 h3 {
   text-align: center;
+  padding-bottom: 30px;
 }
 
 button {
   margin-top: 20px;
-  width: 50%;
+  width: 45%;
+  padding: 1.25%;
   height: 40px;
 }
 
@@ -40,4 +42,9 @@ th {
 td,
 th {
   padding-left: 5px;
+}
+
+header {
+  background-color: #000;
+  height: 100px;
 }

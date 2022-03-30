@@ -10,6 +10,29 @@ module.exports = {
         exclude: /node_modules/,
         use: ["babel-loader"],
       },
+      {
+        test: /\.html$/,
+        use: ["html-loader"],
+      },
+      {
+        test: /\.(jpg|png|svg|gif)$/,
+        use: {
+          loader: "file-loader",
+          options: {
+            name: "[name].[hash].[ext]",
+            outputPath: "imgs",
+          },
+        },
+      },
+      {
+        test: /\.css$/,
+        use: {
+          loader: "css-loader",
+          options: {
+            modules: true,
+          },
+        },
+      },
     ],
   },
   resolve: {
