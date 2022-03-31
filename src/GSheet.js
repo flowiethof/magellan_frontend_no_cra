@@ -1,7 +1,7 @@
 import { gapi } from "gapi-script";
 
 var CLIENT_ID =
-  "701917520053-vjtejg9m2844ohs6is7q5mib2t85bkq8.apps.googleusercontent.com";
+  "701917520053-caau6m9id6dau3oajq4mg0qpb175kg69.apps.googleusercontent.com";
 
 var API_KEY = "AIzaSyBjXWZLhFk2iPnNYQwENxiuOMQug7Au7oI";
 var DISCOVERY_DOCS = [
@@ -69,7 +69,7 @@ export function write_to_gsheet(sheet_id, cell_range, values) {
   };
 
   gapi.client.sheets.spreadsheets.values
-    .update({
+    .append({
       spreadsheetId: sheet_id,
       range: cell_range,
       valueInputOption: "USER_ENTERED",
