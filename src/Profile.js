@@ -83,8 +83,8 @@ function Screening(props) {
   const { category } = props;
 
   useEffect(() => {
-    get_data(sheets["read"], "screened_companies!A1:I300", (res) => {
-      get_data(sheets["read"], "all_companies!A1:I300", (_res) => {
+    get_data(sheets["read"], "screened_companies!A1:M300", (res) => {
+      get_data(sheets["read"], "all_companies!A1:M300", (_res) => {
         let ex_temp = convert_sheet_to_objects(res, category);
         let new_temp = convert_sheet_to_objects(_res, category);
         let temp = ex_temp.map((e) => e["URL"]);
@@ -126,7 +126,11 @@ function Screening(props) {
   } else {
     if (data) {
       Object.keys(data[index]).forEach((key) => {
-        if (!["Link", "funded_organization_identifier"].includes(key)) {
+        if (
+          !["Link", "funded_organization_identifier", "categories"].includes(
+            key
+          )
+        ) {
           rows.push(
             <tr key={key}>
               <th>{key}</th>
