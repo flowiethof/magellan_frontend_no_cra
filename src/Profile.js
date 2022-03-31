@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { get_data, write_to_gsheet } from "./GSheet";
 import Image from "./picus_logo.jpg";
 import Loading from "./loading.gif";
+import Olli from "./olli.png";
 
 const sheets = {
   read: "1ongBRK_4CCyRG0YW21Wo4f8zEX8gNB7pfD49obuGx4A",
@@ -10,8 +11,6 @@ const sheets = {
 };
 
 function convert_sheet_to_objects(table, category) {
-  console.log("here");
-  console.log(category);
   let keys = table[0];
   let result = [];
   table.slice(1, table.length).forEach((row) => {
@@ -23,9 +22,22 @@ function convert_sheet_to_objects(table, category) {
       result.push(temp);
     }
   });
-  console.log(result);
   return result;
 }
+
+const beautify = {
+  Category: "Category",
+  funded_organization_description: "Description",
+  funded_organization_funding_total: "Total funding",
+  funded_organization_location: "Location",
+  investor_identifiers: "Investors",
+  lead_investor_identifiers: "Lead Investors",
+  announced_on: "Announced on",
+  investment_type: "Round stage",
+  founded_on: "Founded on",
+  categories: "Categories",
+  URL: "URL",
+};
 
 function convert_objects_to_sheet(objects) {
   let keys = Object.keys(objects[0]);
@@ -126,20 +138,30 @@ function Screening(props) {
     );
   } else {
     if (data) {
-      Object.keys(data[index]).forEach((key) => {
+      Object.keys(beautify).forEach((key) => {
         if (
           ![
+            "Category",
             "Link",
             "funded_organization_identifier",
             "category_groups",
           ].includes(key)
         ) {
-          rows.push(
-            <tr key={key}>
-              <th>{key}</th>
-              <td>{data[index][key]}</td>
-            </tr>
-          );
+          if (beautify[key] === "Description") {
+            rows.push(
+              <tr key={key} style={{ backgroundColor: "lightgray" }}>
+                <th>{beautify[key]}</th>
+                <td>{data[index][key]}</td>
+              </tr>
+            );
+          } else {
+            rows.push(
+              <tr key={key}>
+                <th>{beautify[key]}</th>
+                <td>{data[index][key]}</td>
+              </tr>
+            );
+          }
         }
       });
     }
@@ -240,6 +262,10 @@ function Select(props) {
       <select id="category_select" onChange={handleSelect}>
         {options}
       </select>
+      <div style={{ textAlign: "right" }}>
+        <img src={Olli} style={{ width: "200px" }} />
+        <p>Olli's choice award 2022</p>
+      </div>
     </>
   );
 }
