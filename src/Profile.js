@@ -138,7 +138,7 @@ function Screening(props) {
     }
   }
 
-  return (
+  return data.length > 0 ? (
     <>
       {data && index < data.length && (
         <>
@@ -190,6 +190,8 @@ function Screening(props) {
         </button>
       </form>
     </>
+  ) : (
+    <></>
   );
 }
 
