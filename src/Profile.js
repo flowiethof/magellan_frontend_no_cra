@@ -2,6 +2,7 @@ import React from "react";
 import { useState, useEffect } from "react";
 import { get_data, write_to_gsheet } from "./GSheet";
 import Image from "./picus_logo.jpg";
+import Loading from "./loading.gif";
 
 const sheets = {
   read: "1ongBRK_4CCyRG0YW21Wo4f8zEX8gNB7pfD49obuGx4A",
@@ -127,9 +128,11 @@ function Screening(props) {
     if (data) {
       Object.keys(data[index]).forEach((key) => {
         if (
-          !["Link", "funded_organization_identifier", "categories"].includes(
-            key
-          )
+          ![
+            "Link",
+            "funded_organization_identifier",
+            "category_groups",
+          ].includes(key)
         ) {
           rows.push(
             <tr key={key}>
@@ -194,8 +197,14 @@ function Screening(props) {
         </button>
       </form>
     </>
+  ) : index === data.length ? (
+    <>
+      <p>No more companies to screen.</p>
+    </>
   ) : (
-    <></>
+    <>
+      <img src={Loading} style={{ height: "100px" }} />
+    </>
   );
 }
 
