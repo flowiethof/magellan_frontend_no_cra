@@ -40,7 +40,6 @@ export function Screening(props) {
         console.log(new_temp);
         let temp = ex_temp.map((e) => e["URL"]);
         temp = new_temp.filter((e) => !temp.includes(e["URL"]));
-        temp = temp.filter((e) => parseInt(e["founded_on"]) < 10);
         temp.forEach((e) => {
           let funding_total = e["funded_organization_funding_total"];
           e["funded_organization_funding_total"] =
@@ -48,16 +47,22 @@ export function Screening(props) {
           let round_size = e["money_raised"];
           e["money_raised"] = Math.round((round_size / 1e6) * 100) / 100 + "M";
           let founded_on = e["founded_on"];
-          if (founded_on === "1") {
-            e["founded_on"] = "1 year";
-          } else if (founded_on === 0) {
-            e["founded_on"] = "<1 year";
+          if (parseInt(e["founded_on"]) > 100) {
+            e["founded_on"] = "N/A";
           } else {
-            e["founded_on"] = founded_on + " years";
+            if (founded_on === "1") {
+              e["founded_on"] = "1 year";
+            } else if (founded_on === 0) {
+              e["founded_on"] = "<1 year";
+            } else {
+              e["founded_on"] = founded_on + " years";
+            }
           }
+
           e["funded_organization_location"] =
             e["funded_organization_location"].split(",")[2];
         });
+        console.log(temp);
         setData(temp);
       });
     });

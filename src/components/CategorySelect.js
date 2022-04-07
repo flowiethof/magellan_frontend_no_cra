@@ -9,7 +9,28 @@ export function CategorySelect(props) {
     setPage("loading");
   };
 
-  const inv_categories = ["", "Healthcare", "Climatech", "Software", "ECommerce", "Edtech", "Devtools", "Blockchain", "Logistics", "RE", "Cyber", "Fintech", "Biotech", "Marketplaces", "Creator"];
+  const inv_categories = [
+    "",
+    "Other",
+    "Robotics",
+    "HR",
+    "Travel",
+    "Gaming",
+    "Healthcare",
+    "Climatech",
+    "Software",
+    "ECommerce",
+    "Edtech",
+    "Devtools",
+    "Blockchain",
+    "Logistics",
+    "RE",
+    "Cyber",
+    "Fintech",
+    "Biotech",
+    "Marketplaces",
+    "Creator",
+  ].sort();
   const options = inv_categories.map((e) => <option key={e}>{e}</option>);
 
   return (
