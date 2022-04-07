@@ -48,3 +48,7 @@ header {
   background-color: #000;
   height: 100px;
 }
+
+tr {
+  height: 12px;
+}

@@ -16,7 +16,7 @@ const beautify = {
   money_raised: "Round size",
   funded_organization_funding_total: "Total funding",
   funded_organization_location: "Location",
-  lead_investor_identifiers: "Lead Investors",
+  lead_investor_identifiers: "Lead Inv.",
   investor_identifiers: "Investors",
   announced_on: "Announced on",
   investment_type: "Round stage",
@@ -141,9 +141,8 @@ export function Screening(props) {
                 <tr key={key}>
                   <th>Funding</th>
                   <td>
-                    <b>Round:</b> {data[index]["money_raised"]}
-                    <br />
-                    <b>Total:</b> {data[index][key]}
+                    <b>Round:</b> {data[index]["money_raised"]}, <b>Total:</b>{" "}
+                    {data[index][key]}
                   </td>
                 </tr>
               );
@@ -195,7 +194,7 @@ export function Screening(props) {
           </div>
           <div className="col-sm-6">
             <>
-              <h3 style={{ marginBottom: "30px" }}>
+              <h4 style={{ textAlign: "center" }}>
                 <a
                   href="#"
                   onClick={() => window.open(data[index]["URL"])}
@@ -203,35 +202,43 @@ export function Screening(props) {
                 >
                   {data[index]["funded_organization_identifier"]}
                 </a>
-              </h3>
-              <h5>
-                {index + 1}/{data.length}
-              </h5>
+              </h4>
+              {index + 1}/{data.length}
             </>
-            <table>{rows}</table>
+            <table>
+              <colgroup>
+                <col span="1" style={{ width: "20%" }} />
+                <col span="1" style={{ width: "80%" }} />
+              </colgroup>
+              {rows}
+            </table>
             <form id="profile-form">
-              <div>
-                <h4>Comment</h4>
-                <textarea id="comment"></textarea>
+              <div className="row">
+                <div className="col-sm-4">
+                  <h6>Comment</h6>
+                  <textarea id="comment"></textarea>
+                </div>
+                <div className="col-sm-4">
+                  <h6>Responsible</h6>
+                  <select id="responsible">{team}</select>
+                </div>
+                <div className="col-sm-4">
+                  <button
+                    className="btn btn-success"
+                    type="button"
+                    onClick={() => handleSubmit("relevant")}
+                  >
+                    Relevant
+                  </button>
+                  <button
+                    className="btn btn-secondary"
+                    type="button"
+                    onClick={() => handleSubmit("reject")}
+                  >
+                    Reject
+                  </button>
+                </div>
               </div>
-              <div>
-                <h4>Responsible</h4>
-                <select id="responsible">{team}</select>
-              </div>
-              <button
-                className="btn btn-success"
-                type="button"
-                onClick={() => handleSubmit("relevant")}
-              >
-                Relevant
-              </button>
-              <button
-                className="btn btn-secondary"
-                type="button"
-                onClick={() => handleSubmit("reject")}
-              >
-                Reject
-              </button>
             </form>
           </div>
         </div>
