@@ -55,7 +55,7 @@ export function Screening(props) {
 	const [data, setData] = useState(false);
 	const [index, setIndex] = useState(0);
 	const { setPage, category, type } = props;
-	let tabs = type === "meeting" ? ["screened_companies", "final_companies"] : ["test_companies", "test_companies_screened"];
+	let tabs = type === "meeting" ? ["screened_companies", "final_companies"] : ["all_companies_filtered", "screened_companies"];
 
 	const handleSubmit = (type) => {
 		let current = data[index];
