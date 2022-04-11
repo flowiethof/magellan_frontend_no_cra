@@ -29,8 +29,12 @@ export function convert_sheet_to_objects(table, category, type) {
 		keys.forEach((key, idx) => {
 			temp[key] = row[idx];
 		});
-		if ((temp["Category"] === category && temp["Relevant"] === "relevant") || type === "meeting" || type === "all") {
+		if ((temp["Category"] === category && temp["Relevant"] === "relevant") || type === "all") {
 			result.push(temp);
+		} else if (type === "meeting") {
+			if (temp["Check"] === "TRUE") {
+				result.push(temp);
+			}
 		}
 	});
 	return result;

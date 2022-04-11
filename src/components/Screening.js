@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { get_gsheet_data, write_to_gsheet, convert_sheet_to_objects, convert_objects_to_sheet } from "./GSheet";
 
 const sheet = "1ongBRK_4CCyRG0YW21Wo4f8zEX8gNB7pfD49obuGx4A";
-const columns = ["Description", "Funding", "Location", "Lead Investors", "Investors", "Company age", "Comment", "Categories", "Website", "Reason of passing", "Team score", "Business model score", "Market score", "Sourcing"];
+const columns = ["Description", "Funding", "Location", "Lead Investors", "Investors", "Company age", "Comment", "Categories", "Website", "Reason of passing", "Team score", "Business model score", "Market score", "Source"];
 
 function CustomRow(props) {
 	const { header, content, color } = props;
@@ -69,12 +69,10 @@ export function Screening(props) {
 	};
 
 	useEffect(() => {
-		get_gsheet_data(sheet, tabs[1] + "!A1:R500", (res) => {
-			get_gsheet_data(sheet, tabs[0] + "!A1:R500", (_res) => {
+		get_gsheet_data(sheet, tabs[1] + "!A1:U500", (res) => {
+			get_gsheet_data(sheet, tabs[0] + "!A1:U500", (_res) => {
 				let screened_list = convert_sheet_to_objects(res, category, "all");
-				console.log(screened_list.length);
 				let open_list = convert_sheet_to_objects(_res, category, type);
-				console.log(open_list.length);
 				setData(open_list.filter((e) => !screened_list.map((e) => e["URL"]).includes(e["URL"])));
 			});
 		});
