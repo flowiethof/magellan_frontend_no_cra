@@ -130,7 +130,7 @@ export function Screening(props) {
 		}
 	}
 
-	const team = ["", "Moritz", "Carina", "Stephan", "Florian", "Alex", "Philipp", "Lukas", "Niclas", "Sebastian", "Olli", "Kolja", "Mikko", "Paulina", "Leonie", "Lauritz"].sort().map((e) => <option key={e}>{e}</option>);
+	const team = ["", "Arian", "Moritz", "Carina", "Stephan", "Florian", "Alex", "Philipp", "Lukas", "Niclas", "Sebastian", "Olli", "Kolja", "Mikko", "Paulina", "Leonie", "Lauritz"].sort().map((e) => <option key={e}>{e}</option>);
 
 	return (
 		data &&
