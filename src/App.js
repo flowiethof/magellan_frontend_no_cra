@@ -26,8 +26,19 @@ function App() {
         </>
       );
       break;
+    case "loading-meeting":
+      el = (
+        <>
+          <GSheet setPage={setPage} type={"meeting"} />
+          <Loading />
+        </>
+      );
+      break;
     case "screen":
       el = <Screening setPage={setPage} category={category} />;
+      break;
+    case "screen-meeting":
+      el = <Screening setPage={setPage} category={category} type={"meeting"} />;
       break;
     case "finished":
       el = <Finished />;

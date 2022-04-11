@@ -1,248 +1,153 @@
-import React from "react";
-import { useState, useEffect } from "react";
-import {
-  get_gsheet_data,
-  write_to_gsheet,
-  convert_sheet_to_objects,
-  convert_objects_to_sheet,
-} from "./GSheet";
+import React, { useState, useEffect } from "react";
+import { get_gsheet_data, write_to_gsheet, convert_sheet_to_objects, convert_objects_to_sheet } from "./GSheet";
 
 const sheet = "1ongBRK_4CCyRG0YW21Wo4f8zEX8gNB7pfD49obuGx4A";
+const columns = ["Description", "Funding", "Location", "Lead Investors", "Investors", "Company age", "Comment", "Categories", "Website", "Reason of passing", "Team score", "Business model score", "Market score", "Sourcing"];
 
-const beautify = {
-  Category: "Category",
-  description: "Description",
-  URL: "URL",
-  money_raised: "Round size",
-  funded_organization_funding_total: "Total funding",
-  funded_organization_location: "Location",
-  lead_investor_identifiers: "Lead Inv.",
-  investor_identifiers: "Investors",
-  announced_on: "Announced on",
-  investment_type: "Round stage",
-  founded_on: "Company age",
-  categories: "Categories",
-  website_url: "Website URL",
-};
+function CustomRow(props) {
+	const { header, content, color } = props;
+	return (
+		<tr key={header} style={{ backgroundColor: color }}>
+			<th>{header}</th>
+			<td>{content}</td>
+		</tr>
+	);
+}
+
+function Form(props) {
+	const { team, handleSubmit } = props;
+	return (
+		<div className="row">
+			<div className="col-sm-4">
+				<h6>Comment</h6>
+				<textarea id="comment"></textarea>
+			</div>
+			<div className="col-sm-4">
+				<h6>Responsible</h6>
+				<select id="responsible">{team}</select>
+			</div>
+			<div className="col-sm-4">
+				<button className="btn btn-success" type="button" onClick={() => handleSubmit("relevant")}>
+					Relevant
+				</button>
+				<button className="btn btn-secondary" type="button" onClick={() => handleSubmit("reject")}>
+					Reject
+				</button>
+			</div>
+		</div>
+	);
+}
+
+function InfoTable(props) {
+	const { rows } = props;
+	return (
+		<table>
+			<colgroup>
+				<col span="1" style={{ width: "20%" }} />
+				<col span="1" style={{ width: "80%" }} />
+			</colgroup>
+			{rows}
+		</table>
+	);
+}
 
 export function Screening(props) {
-  const [data, setData] = useState(false);
-  const [index, setIndex] = useState(0);
+	const [data, setData] = useState(false);
+	const [index, setIndex] = useState(0);
+	const { setPage, category, type } = props;
+	let tabs = type === "meeting" ? ["screened_companies", "final_companies"] : ["test_companies", "test_companies_screened"];
 
-  const { setPage, category } = props;
+	const handleSubmit = (type) => {
+		let current = data[index];
+		current["check"] = type === "relevant";
+		["comment", "responsible"].forEach((e) => {
+			current[e] = document.getElementById(e).value;
+			document.getElementById(e).value = "";
+		});
+		write_to_gsheet(sheet, tabs[1] + "!A:A", convert_objects_to_sheet([current]));
+		setIndex((prevIndex) => prevIndex + 1);
+	};
 
-  useEffect(() => {
-    get_gsheet_data(sheet, "screened_companies!A1:P300", (res) => {
-      get_gsheet_data(sheet, "all_companies_filtered!A1:P300", (_res) => {
-        let ex_temp = convert_sheet_to_objects(res, category, "all");
-        console.log(ex_temp);
-        let new_temp = convert_sheet_to_objects(_res, category, "relevant");
-        console.log(new_temp);
-        let temp = ex_temp.map((e) => e["URL"]);
-        temp = new_temp.filter((e) => !temp.includes(e["URL"]));
-        temp.forEach((e) => {
-          let funding_total = e["funded_organization_funding_total"];
-          e["funded_organization_funding_total"] =
-            Math.round((funding_total / 1e6) * 100) / 100 + "M";
-          let round_size = e["money_raised"];
-          e["money_raised"] = Math.round((round_size / 1e6) * 100) / 100 + "M";
-          let founded_on = e["founded_on"];
-          if (parseInt(e["founded_on"]) > 100) {
-            e["founded_on"] = "N/A";
-          } else {
-            if (founded_on === "1") {
-              e["founded_on"] = "1 year";
-            } else if (founded_on === 0) {
-              e["founded_on"] = "<1 year";
-            } else {
-              e["founded_on"] = founded_on + " years";
-            }
-          }
+	useEffect(() => {
+		get_gsheet_data(sheet, tabs[1] + "!A1:Z300", (res) => {
+			get_gsheet_data(sheet, tabs[0] + "!A1:Z300", (_res) => {
+				let screened_list = convert_sheet_to_objects(res, category, "all");
+				let open_list = convert_sheet_to_objects(_res, category, type);
+				setData(open_list.filter((e) => !screened_list.map((e) => e["URL"]).includes(e["URL"])));
+			});
+		});
+	}, []);
 
-          e["funded_organization_location"] =
-            e["funded_organization_location"].split(",")[2];
-        });
-        console.log(temp);
-        setData(temp);
-      });
-    });
-  }, []);
-  let rows = [];
+	let rows = [];
 
-  const handleSubmit = (type) => {
-    let this_temp = data[index];
-    if (type === "relevant") {
-      this_temp["check"] = true;
-      setIndex((prevIndex) => prevIndex + 1);
-    } else if (type === "reject") {
-      this_temp["check"] = false;
-      setIndex((prevIndex) => prevIndex + 1);
-    }
-    this_temp["comment"] = document.getElementById("comment").value;
-    this_temp["responsible"] = document.getElementById("responsible").value;
+	if (index === data.length) {
+		setPage("finished");
+	} else {
+		if (data) {
+			columns.forEach((key) => {
+				if (data[index][key] === "") {
+				} else if (key === "Description") {
+					rows.push(<CustomRow header={key} content={data[index][key]} color="lightgray" />);
+				} else if (key === "Website") {
+					rows.push(
+						<CustomRow
+							header="Websites"
+							content={
+								<>
+									{data[index]["URL"] !== "" && (
+										<>
+											<a href="#" onClick={() => window.open(data[index][key])}>
+												Crunchbase
+											</a>
+											{" - "}
+										</>
+									)}
+									<a href="#" onClick={() => window.open(data[index]["Website"])}>
+										Website
+									</a>
+								</>
+							}
+						/>
+					);
+				} else if (key === "Funding") {
+					if (data[index]["Round Size"] !== "" || data[index]["Total Funding"] !== "") {
+						rows.push(
+							<CustomRow
+								header="Funding"
+								content={
+									<>
+										<b>Round:</b> {data[index]["Round Size"]}, <b>Total:</b> {data[index]["Total Funding"]}
+									</>
+								}
+							/>
+						);
+					}
+				} else if (!data[index][key]) {
+				} else {
+					rows.push(<CustomRow header={key} content={data[index][key]} />);
+				}
+			});
+		}
+	}
 
-    document.getElementById("responsible").value = "";
-    document.getElementById("comment").value = "";
-    console.log(this_temp);
-    console.log(convert_objects_to_sheet([this_temp]));
-    write_to_gsheet(
-      sheet,
-      "screened_companies!A:A",
-      convert_objects_to_sheet([this_temp])
-    );
-  };
+	const team = ["", "Moritz", "Carina", "Stephan", "Florian", "Alex", "Philipp", "Lukas", "Niclas", "Sebastian", "Olli", "Kolja", "Mikko", "Paulina", "Leonie", "Lauritz"].sort().map((e) => <option key={e}>{e}</option>);
 
-  if (index === data.length) {
-    setPage("finished");
-  } else {
-    if (data) {
-      Object.keys(beautify).forEach((key) => {
-        if (
-          ![
-            "Category",
-            "Link",
-            "funded_organization_identifier",
-            "category_groups",
-            "announced_on",
-            "investment_type",
-            "website_url",
-            "money_raised",
-          ].includes(key)
-        ) {
-          switch (beautify[key]) {
-            case "Description":
-              rows.push(
-                <tr key={key} style={{ backgroundColor: "lightgray" }}>
-                  <th>{beautify[key]}</th> <td>{data[index][key]}</td>
-                </tr>
-              );
-              break;
-            case "URL":
-              rows.push(
-                <tr key={key}>
-                  <th>Websites</th>
-                  <td>
-                    <a href="#" onClick={() => window.open(data[index][key])}>
-                      Crunchbase
-                    </a>
-                    {" - "}
-                    <a
-                      href="#"
-                      onClick={() => window.open(data[index]["website_url"])}
-                    >
-                      Website
-                    </a>
-                  </td>
-                </tr>
-              );
-              break;
-            case "Total funding":
-              rows.push(
-                <tr key={key}>
-                  <th>Funding</th>
-                  <td>
-                    <b>Round:</b> {data[index]["money_raised"]}, <b>Total:</b>{" "}
-                    {data[index][key]}
-                  </td>
-                </tr>
-              );
-              break;
-            default:
-              rows.push(
-                <tr key={key}>
-                  {" "}
-                  <th>{beautify[key]}</th> <td>{data[index][key]}</td>{" "}
-                </tr>
-              );
-          }
-        }
-      });
-    }
-  }
-
-  const team = [
-    "",
-    "Moritz",
-    "Carina",
-    "Stephan",
-    "Florian",
-    "Alex",
-    "Philipp",
-    "Lukas",
-    "Niclas",
-    "Sebastian",
-    "Olli",
-    "Kolja",
-    "Mikko",
-    "Paulina",
-    "Leonie",
-    "Lauritz",
-  ]
-    .sort()
-    .map((e) => <option key={e}>{e}</option>);
-
-  return (
-    data &&
-    index < data.length && (
-      <>
-        <div className="row">
-          <div className="col-sm-6">
-            <iframe
-              src={data[index]["website_url"]}
-              style={{ width: "100%", height: "100%" }}
-            ></iframe>
-          </div>
-          <div className="col-sm-6">
-            <>
-              <h4 style={{ textAlign: "center" }}>
-                <a
-                  href="#"
-                  onClick={() => window.open(data[index]["URL"])}
-                  style={{ color: "gray" }}
-                >
-                  {data[index]["funded_organization_identifier"]}
-                </a>
-              </h4>
-              {index + 1}/{data.length}
-            </>
-            <table>
-              <colgroup>
-                <col span="1" style={{ width: "20%" }} />
-                <col span="1" style={{ width: "80%" }} />
-              </colgroup>
-              {rows}
-            </table>
-            <form id="profile-form">
-              <div className="row">
-                <div className="col-sm-4">
-                  <h6>Comment</h6>
-                  <textarea id="comment"></textarea>
-                </div>
-                <div className="col-sm-4">
-                  <h6>Responsible</h6>
-                  <select id="responsible">{team}</select>
-                </div>
-                <div className="col-sm-4">
-                  <button
-                    className="btn btn-success"
-                    type="button"
-                    onClick={() => handleSubmit("relevant")}
-                  >
-                    Relevant
-                  </button>
-                  <button
-                    className="btn btn-secondary"
-                    type="button"
-                    onClick={() => handleSubmit("reject")}
-                  >
-                    Reject
-                  </button>
-                </div>
-              </div>
-            </form>
-          </div>
-        </div>
-      </>
-    )
-  );
+	return (
+		data &&
+		index < data.length && (
+			<>
+				<div className="row">
+					<div className="col-sm-6">
+						<iframe src={data[index]["Website"]} style={{ width: "100%", height: "100%" }}></iframe>
+					</div>
+					<div className="col-sm-6">
+						<h4 style={{ textAlign: "center" }}>{data[index]["Company Name"]}</h4>
+						{index + 1}/{data.length}
+						<InfoTable rows={rows} />
+						<Form team={team} handleSubmit={handleSubmit} />
+					</div>
+				</div>
+			</>
+		)
+	);
 }
