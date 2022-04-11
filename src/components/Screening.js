@@ -69,10 +69,12 @@ export function Screening(props) {
 	};
 
 	useEffect(() => {
-		get_gsheet_data(sheet, tabs[1] + "!A1:Z300", (res) => {
-			get_gsheet_data(sheet, tabs[0] + "!A1:Z300", (_res) => {
+		get_gsheet_data(sheet, tabs[1] + "!A1:R500", (res) => {
+			get_gsheet_data(sheet, tabs[0] + "!A1:R500", (_res) => {
 				let screened_list = convert_sheet_to_objects(res, category, "all");
+				console.log(screened_list.length);
 				let open_list = convert_sheet_to_objects(_res, category, type);
+				console.log(open_list.length);
 				setData(open_list.filter((e) => !screened_list.map((e) => e["URL"]).includes(e["URL"])));
 			});
 		});
@@ -94,9 +96,9 @@ export function Screening(props) {
 							header="Websites"
 							content={
 								<>
-									{data[index]["URL"] !== "" && (
+									{data[index]["URL"].startsWith("http") && (
 										<>
-											<a href="#" onClick={() => window.open(data[index][key])}>
+											<a href="#" onClick={() => window.open(data[index]["URL"])}>
 												Crunchbase
 											</a>
 											{" - "}

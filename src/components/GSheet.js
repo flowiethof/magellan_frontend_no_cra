@@ -29,8 +29,6 @@ export function convert_sheet_to_objects(table, category, type) {
 		keys.forEach((key, idx) => {
 			temp[key] = row[idx];
 		});
-		console.log(category);
-		console.log(temp["Category"]);
 		if ((temp["Category"] === category && temp["Relevant"] === "relevant") || type === "meeting" || type === "all") {
 			result.push(temp);
 		}
