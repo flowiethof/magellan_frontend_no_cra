@@ -1,54 +1,54 @@
 h3 {
-  text-align: center;
-  padding-bottom: 30px;
+	text-align: center;
+	padding-bottom: 30px;
 }
 
 button {
-  margin-top: 20px;
-  width: 45%;
-  padding: 1.25%;
-  height: 40px;
+	margin-top: 20px;
+	width: 30%;
+	padding: 1.25%;
+	height: 40px;
 }
 
 table {
-  margin-bottom: 20px;
-  width: 100%;
+	margin-bottom: 20px;
+	width: 100%;
 }
 
 textarea {
-  width: 100%;
-  margin-bottom: 10px;
+	width: 100%;
+	margin-bottom: 10px;
 }
 
 select {
-  height: 40px;
-  width: 120px;
+	height: 40px;
+	width: 120px;
 }
 
 table,
 tr,
 td,
 th {
-  border-collapse: collapse;
-  border: 1px solid;
+	border-collapse: collapse;
+	border: 1px solid;
 }
 
 tr,
 td,
 th {
-  padding: 10px;
+	padding: 10px;
 }
 
 td,
 th {
-  padding-left: 5px;
+	padding-left: 5px;
 }
 
 header {
-  background-color: #000;
-  height: 100px;
+	background-color: #000;
+	height: 100px;
 }
 
 tr {
-  height: 12px;
+	height: 12px;
 }

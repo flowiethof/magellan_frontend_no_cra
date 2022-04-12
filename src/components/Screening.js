@@ -2,7 +2,28 @@ import React, { useState, useEffect } from "react";
 import { get_gsheet_data, write_to_gsheet, convert_sheet_to_objects, convert_objects_to_sheet } from "./GSheet";
 
 const sheet = "1ongBRK_4CCyRG0YW21Wo4f8zEX8gNB7pfD49obuGx4A";
-const columns = ["Description", "Funding", "Location", "Lead Investors", "Investors", "Company age", "Comment", "Categories", "Website", "Reason of passing", "Team score", "Business model score", "Market score", "Source"];
+const columns = ["Category", "Description", "Funding", "Location", "Lead Investors", "Investors", "Company age", "Comment", "Categories", "Website", "Reason of passing", "Team score", "Business model score", "Market score", "Source"];
+const inv_categories = {
+	Other: "Philipp",
+	Robotics: "Lukas",
+	HR: "Alex",
+	Travel: "Lukas",
+	Gaming: "Lukas",
+	Healthcare: "Philipp",
+	Climatech: "Philipp",
+	Software: "Lukas",
+	ECommerce: "Lukas",
+	Edtech: "Lukas",
+	Devtools: "Kolja",
+	Blockchain: "Alex",
+	Logistics: "Lukas",
+	RE: "Niclas",
+	Cyber: "Moritz",
+	Fintech: "Niclas",
+	Biotech: "Philipp",
+	Marketplaces: "Niclas",
+	Creator: "Alex",
+};
 
 function CustomRow(props) {
 	const { header, content, color } = props;
@@ -17,24 +38,35 @@ function CustomRow(props) {
 function Form(props) {
 	const { team, handleSubmit } = props;
 	return (
-		<div className="row">
-			<div className="col-sm-4">
-				<h6>Comment</h6>
-				<textarea id="comment"></textarea>
+		<>
+			<div className="row">
+				<div className="col-sm-4">
+					<h6>Comment</h6>
+					<textarea id="comment"></textarea>
+				</div>
+				<div className="col-sm-4">
+					<h6>Responsible</h6>
+					<select id="responsible">{team}</select>
+				</div>
 			</div>
-			<div className="col-sm-4">
-				<h6>Responsible</h6>
-				<select id="responsible">{team}</select>
+			<div className="row">
+				<div className="col-sm-4">
+					<button style={{ width: "100%" }} className="btn btn-success" type="button" onClick={() => handleSubmit("relevant")}>
+						Relevant
+					</button>
+				</div>
+				<div className="col-sm-4">
+					<button style={{ width: "100%" }} className="btn btn-secondary" type="button" onClick={() => handleSubmit("reject")}>
+						Reject
+					</button>
+				</div>
+				<div className="col-sm-4">
+					<button style={{ width: "100%" }} className="btn btn-warning" type="button" onClick={() => handleSubmit("fyi")}>
+						FYI
+					</button>
+				</div>
 			</div>
-			<div className="col-sm-4">
-				<button className="btn btn-success" type="button" onClick={() => handleSubmit("relevant")}>
-					Relevant
-				</button>
-				<button className="btn btn-secondary" type="button" onClick={() => handleSubmit("reject")}>
-					Reject
-				</button>
-			</div>
-		</div>
+		</>
 	);
 }
 
@@ -51,6 +83,10 @@ function InfoTable(props) {
 	);
 }
 
+function strCmp(a, b) {
+	return a < b ? -1 : 1;
+}
+
 export function Screening(props) {
 	const [data, setData] = useState(false);
 	const [index, setIndex] = useState(0);
@@ -59,7 +95,13 @@ export function Screening(props) {
 
 	const handleSubmit = (type) => {
 		let current = data[index];
-		current["check"] = type === "relevant";
+		if (type === "relevant") {
+			current["check"] = true;
+		} else if (type === "reject") {
+			current["check"] = false;
+		} else {
+			current["check"] = "FYI";
+		}
 		["comment", "responsible"].forEach((e) => {
 			current[e] = document.getElementById(e).value;
 			document.getElementById(e).value = "";
@@ -73,7 +115,11 @@ export function Screening(props) {
 			get_gsheet_data(sheet, tabs[0] + "!A1:U500", (_res) => {
 				let screened_list = convert_sheet_to_objects(res, category, "all");
 				let open_list = convert_sheet_to_objects(_res, category, type);
-				setData(open_list.filter((e) => !screened_list.map((e) => e["URL"]).includes(e["URL"])));
+				open_list = open_list.filter((e) => !screened_list.map((e) => e["URL"]).includes(e["URL"]));
+				open_list = open_list.sort((a, b) => {
+					return strCmp(a["Source"], b["Source"]) || strCmp(a["Category"], b["Category"]);
+				});
+				setData(open_list);
 			});
 		});
 	}, []);
@@ -88,6 +134,10 @@ export function Screening(props) {
 				if (data[index][key] === "") {
 				} else if (key === "Description") {
 					rows.push(<CustomRow header={key} content={data[index][key]} color="lightgray" />);
+				} else if (key === "Category") {
+					if (type === "meeting") {
+						rows.push(<CustomRow header={key} content={data[index][key] + " - " + inv_categories[data[index][key]]} color="lightcoral" />);
+					}
 				} else if (key === "Website") {
 					rows.push(
 						<CustomRow
