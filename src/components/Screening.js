@@ -83,6 +83,31 @@ function InfoTable(props) {
 	);
 }
 
+function sortCompanies(a, b) {
+	const keys = { Check: "desc", Category: "asc", Source: "asc" };
+	let result = 0;
+	Object.keys(keys).forEach((key) => {
+		if (keys[key] === "asc") {
+			if (a[key] > b[key]) {
+				result = 1;
+				return;
+			} else if (a[key] < b[key]) {
+				result = -1;
+				return;
+			}
+		} else if (keys[key] === "desc") {
+			if (a[key] < b[key]) {
+				result = 1;
+				return;
+			} else if (a[key] > b[key]) {
+				result = -1;
+				return;
+			}
+		}
+	});
+	return result;
+}
+
 export function Screening(props) {
 	const [data, setData] = useState(false);
 	const [index, setIndex] = useState(0);
@@ -112,6 +137,7 @@ export function Screening(props) {
 				let screened_list = convert_sheet_to_objects(res, category, "all");
 				let open_list = convert_sheet_to_objects(_res, category, type);
 				open_list = open_list.filter((e) => !screened_list.map((e) => e["URL"]).includes(e["URL"]));
+				open_list = open_list.sort((a, b) => sortCompanies(a, b));
 				console.log(open_list);
 				setData(open_list);
 			});
