@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { get_gsheet_data, write_to_gsheet, convert_sheet_to_objects, convert_objects_to_sheet } from "./GSheet";
 
 const sheet = "1ongBRK_4CCyRG0YW21Wo4f8zEX8gNB7pfD49obuGx4A";
-const columns = ["Category", "Description", "Funding", "Location", "Lead Investors", "Investors", "Company age", "Comment", "Categories", "Website", "Reason of passing", "Team score", "Business model score", "Market score", "Source"];
+const columns = ["Category", "Description", "Funding", "Location", "Lead Investors", "Investors", "Company age", "Comment", "Categories", "Website", "Reason of passing", "Team score", "Business model score", "Market score", "Source", "Check"];
 const inv_categories = {
 	Other: "Philipp",
 	Robotics: "Lukas",
@@ -83,10 +83,6 @@ function InfoTable(props) {
 	);
 }
 
-function strCmp(a, b) {
-	return a < b ? -1 : 1;
-}
-
 export function Screening(props) {
 	const [data, setData] = useState(false);
 	const [index, setIndex] = useState(0);
@@ -116,9 +112,7 @@ export function Screening(props) {
 				let screened_list = convert_sheet_to_objects(res, category, "all");
 				let open_list = convert_sheet_to_objects(_res, category, type);
 				open_list = open_list.filter((e) => !screened_list.map((e) => e["URL"]).includes(e["URL"]));
-				open_list = open_list.sort((a, b) => {
-					return strCmp(a["Source"], b["Source"]) || strCmp(a["Category"], b["Category"]);
-				});
+				console.log(open_list);
 				setData(open_list);
 			});
 		});
@@ -171,6 +165,10 @@ export function Screening(props) {
 								}
 							/>
 						);
+					}
+				} else if (key === "Check") {
+					if (data[index]["Check"] === "FYI") {
+						rows.push(<CustomRow header={key} content={data[index][key]} color="lightyellow" />);
 					}
 				} else if (!data[index][key]) {
 				} else {
