@@ -1,32 +1,38 @@
 {
-  "name": "react-webpack",
-  "version": "1.0.0",
-  "description": "Starter template for react app built on webpack v4",
-  "main": "index.js",
-  "scripts": {
-    "start": "webpack serve --config ./webpack.config.js --mode development --port 3000",
-    "build": "webpack --config ./webpack.config.js --mode production",
-    "dev": "webpack --config ./webpack.config.js --mode development"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "devDependencies": {
-    "@babel/core": "^7.16.0",
-    "@babel/preset-env": "^7.16.0",
-    "@babel/preset-react": "^7.16.0",
-    "babel-loader": "^8.2.3",
-    "css-loader": "^6.7.1",
-    "style-loader": "^3.3.1",
-    "webpack": "^5.64.3",
-    "webpack-cli": "^4.9.1",
-    "webpack-dev-server": "^3.11.3"
-  },
-  "dependencies": {
-    "file-loader": "^6.2.0",
-    "gapi-script": "^1.2.0",
-    "html-loader": "^3.1.0",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2"
-  }
+	"name": "react-webpack",
+	"version": "1.0.0",
+	"description": "Starter template for react app built on webpack v4",
+	"main": "index.js",
+	"scripts": {
+		"start": "webpack serve --config ./webpack.config.js --mode development --port 3000",
+		"build": "webpack --config ./webpack.config.js --mode production",
+		"dev": "webpack --config ./webpack.config.js --mode development"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"devDependencies": {
+		"@babel/core": "^7.16.0",
+		"@babel/plugin-transform-runtime": "^7.17.0",
+		"@babel/preset-env": "^7.16.0",
+		"@babel/preset-react": "^7.16.0",
+		"babel-loader": "^8.2.3",
+		"css-loader": "^6.7.1",
+		"style-loader": "^3.3.1",
+		"webpack": "^5.64.3",
+		"webpack-cli": "^4.9.1",
+		"webpack-dev-server": "^3.11.3"
+	},
+	"dependencies": {
+		"@babel/runtime": "^7.17.9",
+		"@slack/web-api": "^6.7.1",
+		"file-loader": "^6.2.0",
+		"gapi-script": "^1.2.0",
+		"html-loader": "^3.1.0",
+		"os-browserify": "^0.3.0",
+		"path-browserify": "^1.0.1",
+		"react": "^17.0.2",
+		"react-dom": "^17.0.2",
+		"react-scripts": "3.4.0"
+	}
 }

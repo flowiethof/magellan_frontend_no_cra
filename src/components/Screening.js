@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { get_gsheet_data, write_to_gsheet, convert_sheet_to_objects, convert_objects_to_sheet } from "./GSheet";
 
 const sheet = "1ongBRK_4CCyRG0YW21Wo4f8zEX8gNB7pfD49obuGx4A";
-const columns = ["Category", "Description", "Funding", "Location", "Lead Investors", "Investors", "Company age", "Comment", "Categories", "Website", "Reason of passing", "Team score", "Business model score", "Market score", "Source", "Check"];
+const columns = ["Comment", "Category", "Description", "Funding", "Location", "Lead Investors", "Investors", "Company age", "Categories", "Website", "Reason of passing", "Team score", "Business model score", "Market score", "Source", "Check"];
 const inv_categories = {
 	Other: "Philipp",
 	Robotics: "Lukas",
@@ -108,10 +108,29 @@ function sortCompanies(a, b) {
 	return result;
 }
 
+function Timer(props) {
+	let { seconds } = props;
+	let color = "";
+	if (seconds > 30) {
+		color = "red";
+	}
+	let minutes = Math.floor(seconds / 60);
+	seconds = seconds % 60;
+	if (seconds < 10) {
+		seconds = "0" + seconds;
+	}
+	if (minutes < 10) {
+		minutes = "0" + minutes;
+	}
+	return <span style={{ color: color }}>{minutes + ":" + seconds}</span>;
+}
+
 export function Screening(props) {
 	const [data, setData] = useState(false);
 	const [index, setIndex] = useState(0);
+	const [seconds, setSeconds] = useState(0);
 	const { setPage, category, type } = props;
+
 	let tabs = type === "meeting" ? ["screened_companies", "final_companies"] : ["all_companies_filtered", "screened_companies"];
 
 	const handleSubmit = (type) => {
@@ -123,19 +142,30 @@ export function Screening(props) {
 		} else {
 			current["check"] = "FYI";
 		}
-		["comment", "responsible"].forEach((e) => {
-			current[e] = document.getElementById(e).value;
-			document.getElementById(e).value = "";
-		});
-		write_to_gsheet(sheet, tabs[1] + "!A:A", convert_objects_to_sheet([current]));
-		setIndex((prevIndex) => prevIndex + 1);
+
+		if (current["check"] === "FYI" && document.getElementById("responsible").value === "") {
+			window.alert("You have to enter a contact (responsible) person for an FYI");
+		} else {
+			current["comment"] = document.getElementById("comment").value;
+			document.getElementById("comment").value = "";
+			current["responsible"] = document.getElementById("responsible").value;
+			document.getElementById("responsible").value = "";
+			write_to_gsheet(sheet, tabs[1] + "!A:A", convert_objects_to_sheet([current]));
+			setIndex((prevIndex) => prevIndex + 1);
+			setSeconds(0);
+		}
 	};
 
+	let interval;
 	useEffect(() => {
+		interval = setInterval(() => {
+			setSeconds((prev) => prev + 1);
+		}, 1000);
 		get_gsheet_data(sheet, tabs[1] + "!A1:U500", (res) => {
 			get_gsheet_data(sheet, tabs[0] + "!A1:U500", (_res) => {
 				let screened_list = convert_sheet_to_objects(res, category, "all");
 				let open_list = convert_sheet_to_objects(_res, category, type);
+				open_list = open_list.filter((e) => e["Date"] === "10.05.2022");
 				open_list = open_list.filter((e) => !screened_list.map((e) => e["URL"]).includes(e["URL"]));
 				open_list = open_list.sort((a, b) => sortCompanies(a, b));
 				console.log(open_list);
@@ -147,6 +177,7 @@ export function Screening(props) {
 	let rows = [];
 
 	if (index === data.length) {
+		clearInterval(interval);
 		setPage("finished");
 	} else {
 		if (data) {
@@ -159,26 +190,28 @@ export function Screening(props) {
 						rows.push(<CustomRow header={key} content={data[index][key] + " - " + inv_categories[data[index][key]]} color="lightcoral" />);
 					}
 				} else if (key === "Website") {
-					rows.push(
-						<CustomRow
-							header="Websites"
-							content={
-								<>
-									{data[index]["URL"].startsWith("http") && (
-										<>
-											<a href="#" onClick={() => window.open(data[index]["URL"])}>
-												Crunchbase
-											</a>
-											{" - "}
-										</>
-									)}
-									<a href="#" onClick={() => window.open(data[index]["Website"])}>
-										Website
-									</a>
-								</>
-							}
-						/>
-					);
+					if (type !== "meeting") {
+						rows.push(
+							<CustomRow
+								header="Websites"
+								content={
+									<>
+										{data[index]["URL"].startsWith("http") && (
+											<>
+												<a href="#" onClick={() => window.open(data[index]["URL"])}>
+													Crunchbase
+												</a>
+												{" - "}
+											</>
+										)}
+										<a href="#" onClick={() => window.open(data[index]["Website"])}>
+											Website
+										</a>
+									</>
+								}
+							/>
+						);
+					}
 				} else if (key === "Funding") {
 					if (data[index]["Round Size"] !== "" || data[index]["Total Funding"] !== "") {
 						rows.push(
@@ -214,9 +247,12 @@ export function Screening(props) {
 					<div className="col-sm-6">
 						<iframe src={data[index]["Website"]} style={{ width: "100%", height: "100%" }}></iframe>
 					</div>
+
 					<div className="col-sm-6">
 						<h4 style={{ textAlign: "center" }}>{data[index]["Company Name"]}</h4>
 						{index + 1}/{data.length}
+						{" - "}
+						<Timer seconds={seconds} />
 						<InfoTable rows={rows} />
 						<Form team={team} handleSubmit={handleSubmit} />
 					</div>

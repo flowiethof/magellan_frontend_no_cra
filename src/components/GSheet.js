@@ -32,7 +32,7 @@ export function convert_sheet_to_objects(table, category, type) {
 		if ((temp["Category"] === category && temp["Relevant"] === "relevant") || type === "all") {
 			result.push(temp);
 		} else if (type === "meeting") {
-			if (temp["Check"] === "TRUE" || temp["Check"] === "FYI") {
+			if (temp["Check"] === "TRUE") {
 				result.push(temp);
 			}
 		}

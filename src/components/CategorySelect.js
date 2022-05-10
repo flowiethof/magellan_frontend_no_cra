@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Olli from "../img/olli.png";
 
 export function CategorySelect(props) {
